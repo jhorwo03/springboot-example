@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-employee-api-apples
+  namespace: apples
+spec:
+  selector:
+    matchLabels:
+      app: springboot-employee-api-apples
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: springboot-employee-api-apples
+    spec:
+      containers:
+        - name: springboot-employee-api-apples
+          image: pasapples/springbootemployee:multi-stage-add-layers
+          imagePullPolicy: Always
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8080
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 80
+          resources:
+            limits:
+              memory: 756Mi
+              cpu: "1"
+            requests:
+              memory: 200Mi
+              cpu: "0.5"
+          securityContext:
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-employee-api-apples-lb
+  labels:
+    name: springboot-employee-api-apples-lb
+spec:
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    app: springboot-employee-api-apples-api
+  loadBalancerSourceRanges:
+    - "143.231.0.0/16"
+  type: LoadBalancer

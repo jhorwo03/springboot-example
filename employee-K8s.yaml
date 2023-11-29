@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-employee-api-apples
+  namespace: apples
+spec:
+  selector:
+    matchLabels:
+      app: springboot-employee-api-apples
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: springboot-employee-api-apples
+    spec:
+      containers:
+        - name: springboot-employee-api-apples
+          image: pasapples/springbootemployee:multi-stage-add-layers
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
